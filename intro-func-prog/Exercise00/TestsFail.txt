@@ -1,0 +1,18 @@
+
+<lots of stuff and then ...>
+
+Exercise 00 Tests:
+  Say Hello Nicely [10 marks]: [Failed]
+expected: "Hello World :-)"
+ but got: "I am currently a failing exercise"
+
+         Test Cases  Total      
+ Passed  0           0          
+ Failed  1           1          
+ Total   1           1          
+
+ex00                      > Test suite ExerciseZero failed
+Completed 4 action(s).
+Test suite failure for package ex00-0.1.0.0
+    ExerciseZero:  exited with: ExitFailure 1
+Logs printed to console

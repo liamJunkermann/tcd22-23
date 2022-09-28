@@ -1,0 +1,13 @@
+
+<lots of stuff and then ...>
+
+Exercise 00 Tests:
+  Say Hello Nicely [10 marks]: [OK]
+
+         Test Cases  Total      
+ Passed  1           1          
+ Failed  0           0          
+ Total   1           1          
+
+ex00> Test suite ExerciseZero passed
+Completed 2 action(s).

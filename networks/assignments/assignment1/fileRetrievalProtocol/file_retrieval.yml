@@ -1,0 +1,52 @@
+version: "2"
+services:
+  #ingress
+  ingress:
+    container_name: ingress
+    image: openjdk:8-alpine
+    restart: "no"
+    volumes:
+      - ./src:/file_retrieval
+    networks:
+      file_retrieval:
+        ipv4_address: 192.168.10.10
+    command: tail -f /dev/null
+
+  #clients
+  client1:
+    container_name: client1
+    image: openjdk:8-alpine
+    restart: "no"
+    volumes:
+      - ./src:/file_retrieval
+    networks:
+      file_retrieval:
+        ipv4_address: 192.168.10.20
+    command: tail -f /dev/null
+
+  client2:
+    container_name: client2
+    image: openjdk:8-alpine
+    restart: "no"
+    volumes:
+      - ./src:/file_retrieval
+    networks:
+      file_retrieval:
+        ipv4_address: 192.168.10.30
+    command: tail -f /dev/null
+
+  tcpdump:
+    container_name: tcpdump
+    image: kaazing/tcpdump
+    network_mode: "host"
+    volumes:
+      - ./tcpdump:/tcpdump
+
+# Network
+networks:
+  file_retrieval:
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.168.10.0/24
+          gateway: 192.168.10.1
