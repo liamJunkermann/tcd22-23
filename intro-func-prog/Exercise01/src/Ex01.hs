@@ -65,9 +65,10 @@ HINT: Don't worry about code efficiency
 
 -}
 runs :: Eq a => [a] -> [[a]]
+runs [] = []
 runs [a] = [[a]]
-runs (x0 : x1 : x2 : xs) | x0 == x1 && x1 == x2 = [x0, x1, x2] : runs xs
-runs (x0 : x1 : xs)
-  | x0 == x1 = [x0, x1] : runs xs
-  | x0 /= x1 = [x0] : runs (x1 : xs)
-runs xs = foldr (\x -> (:) [x]) [] xs
+runs (x : x1 : xs) =
+  let (head : tail) = runs (x1 : xs)
+   in if x /= x1
+        then [x] : head : tail
+        else (x : head) : tail
