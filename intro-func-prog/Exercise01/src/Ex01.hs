@@ -69,6 +69,6 @@ runs [] = []
 runs [a] = [[a]]
 runs (x : x1 : xs) =
   let (head : tail) = runs (x1 : xs)
-   in if x /= x1
-        then [x] : head : tail
-        else (x : head) : tail
+   in if x == x1
+        then (x : head) : tail
+        else [x] : head : tail
