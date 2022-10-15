@@ -4,6 +4,7 @@ services:
   ingress:
     container_name: ingress
     image: openjdk:8-alpine
+    working_dir: /file_retrieval
     restart: "no"
     volumes:
       - ./src:/file_retrieval
@@ -16,6 +17,7 @@ services:
   client1:
     container_name: client1
     image: openjdk:8-alpine
+    working_dir: /file_retrieval
     restart: "no"
     volumes:
       - ./src:/file_retrieval
@@ -27,6 +29,7 @@ services:
   client2:
     container_name: client2
     image: openjdk:8-alpine
+    working_dir: /file_retrieval
     restart: "no"
     volumes:
       - ./src:/file_retrieval
