@@ -3,9 +3,8 @@ services:
   #ingress
   ingress:
     container_name: ingress
-    image: openjdk:8-alpine
+    image: openjdk:19-jdk-alpine
     working_dir: /file_retrieval
-    restart: "no"
     volumes:
       - ./src:/file_retrieval
     networks:
@@ -16,9 +15,8 @@ services:
   #clients
   client1:
     container_name: client1
-    image: openjdk:8-alpine
+    image: openjdk:19-jdk-alpine
     working_dir: /file_retrieval
-    restart: "no"
     volumes:
       - ./src:/file_retrieval
     networks:
@@ -28,14 +26,36 @@ services:
 
   client2:
     container_name: client2
-    image: openjdk:8-alpine
+    image: openjdk:19-jdk-alpine
     working_dir: /file_retrieval
-    restart: "no"
     volumes:
       - ./src:/file_retrieval
     networks:
       file_retrieval:
         ipv4_address: 192.168.10.30
+    command: tail -f /dev/null
+
+  #workers
+  worker1:
+    container_name: worker1
+    image: openjdk:19-jdk-alpine
+    working_dir: /file_retrieval
+    volumes:
+      - ./src:/file_retrieval
+    networks:
+      file_retrieval:
+        ipv4_address: 192.168.10.40
+    command: tail -f /dev/null
+
+  worker2:
+    container_name: worker2
+    image: openjdk:19-jdk-alpine
+    working_dir: /file_retrieval
+    volumes:
+      - ./src:/file_retrieval
+    networks:
+      file_retrieval:
+        ipv4_address: 192.168.10.50
     command: tail -f /dev/null
 
   tcpdump:

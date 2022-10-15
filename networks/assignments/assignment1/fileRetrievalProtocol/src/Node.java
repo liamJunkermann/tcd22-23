@@ -27,13 +27,14 @@ public abstract class Node {
      * clientMap
      */
     static final byte REGCLIENT = 4;
-    static final byte REGACK = 5;
+    static final byte REGWORKER = 5;
+    static final byte REGACK = 6;
     /**
      * Forwarded File Response packet from Ingress to Client
      * <p>
      * Packet data simply includes file data.
      */
-    static final byte FWDFILERES = 3;
+    static final byte FWDFILERES = 7;
 
     DatagramSocket socket;
     Listener listener;

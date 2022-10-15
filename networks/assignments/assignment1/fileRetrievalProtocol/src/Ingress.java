@@ -4,8 +4,9 @@ import java.net.InetSocketAddress;
 import java.util.ArrayList;
 
 public class Ingress extends Node {
-    // private ArrayList<InetSocketAddress> workerMap;
+    private ArrayList<InetSocketAddress> workerMap;
     private ArrayList<InetSocketAddress> clientMap;
+    private int count = 0;
 
     Ingress() {
         try {
@@ -16,7 +17,7 @@ public class Ingress extends Node {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        // workerMap = new ArrayList<InetSocketAddress>();
+        workerMap = new ArrayList<InetSocketAddress>();
         clientMap = new ArrayList<InetSocketAddress>();
     }
 
@@ -26,8 +27,20 @@ public class Ingress extends Node {
 
         // Send reg ack
         byte[] ackData = new byte[2];
-        ackData[TYPE_POS] = 5;
+        ackData[TYPE_POS] = REGACK;
         DatagramPacket ackPacket = new DatagramPacket(ackData, ackData.length, regPacket.getSocketAddress());
+        socket.send(ackPacket);
+        System.out.println("Sent RegAck Packet");
+    }
+
+    private synchronized void registerWorker(DatagramPacket packet) throws Exception {
+        System.out.println("Registering new worker " + packet.getSocketAddress().toString());
+        workerMap.add((InetSocketAddress) packet.getSocketAddress());
+
+        // Send reg ack
+        byte[] ackData = new byte[2];
+        ackData[TYPE_POS] = REGACK;
+        DatagramPacket ackPacket = new DatagramPacket(ackData, ackData.length, packet.getSocketAddress());
         socket.send(ackPacket);
         System.out.println("Sent RegAck Packet");
     }
@@ -45,33 +58,38 @@ public class Ingress extends Node {
         InetSocketAddress srcAddr = (InetSocketAddress) rPacket.getSocketAddress();
         System.out.println(srcAddr.toString() + " requested " + filename);
 
-        byte[] tempData = makeDataByteArray("received, not implemented yet");
-        tempData[TYPE_POS] = 3;
+        if (workerMap.size() <= 0) {
+            System.out.println("Worker map has 0 items");
+            return;
+        }
+        // byte[] tempData = makeDataByteArray("received, not implemented yet");
+        // tempData[TYPE_POS] = FWDFILERES;
 
-        DatagramPacket tempResp = new DatagramPacket(tempData, tempData.length, srcAddr);
-        socket.send(tempResp);
-        // // Select target worker
-        // InetSocketAddress target = workerMap.get(count % workerMap.size());
-        // count++;
+        // DatagramPacket tempResp = new DatagramPacket(tempData, tempData.length,
+        // srcAddr);
+        // socket.send(tempResp);
+        // Select target worker
+        InetSocketAddress target = workerMap.get(count % workerMap.size());
+        count++;
 
-        // int clientId;
-        // if (clientMap.contains(srcAddr)) {
-        // clientId = clientMap.indexOf(srcAddr);
-        // } else {
-        // clientMap.add(srcAddr);
-        // clientId = clientMap.indexOf(srcAddr);
-        // }
+        int clientId;
+        if (clientMap.contains(srcAddr)) {
+            clientId = clientMap.indexOf(srcAddr);
+        } else {
+            clientMap.add(srcAddr);
+            clientId = clientMap.indexOf(srcAddr);
+        }
 
-        // // Create new datagram with response address + filename to retrieve
-        // byte[] fwdData = new byte[CONTROL_HEADER_LENGTH + buffer.length];
-        // System.arraycopy(buffer, 0, fwdData, CONTROL_HEADER_LENGTH, buffer.length);
-        // fwdData[TYPE_POS] = FWDFILEREQ;
-        // fwdData[SRC_POS] = (byte) clientId;
+        // Create new datagram with response address + filename to retrieve
+        byte[] fwdData = new byte[CONTROL_HEADER_LENGTH + buffer.length];
+        System.arraycopy(buffer, 0, fwdData, CONTROL_HEADER_LENGTH, buffer.length);
+        fwdData[TYPE_POS] = FWDFILEREQ;
+        fwdData[SRC_POS] = (byte) clientId;
 
-        // // Sending newly built data
-        // DatagramPacket forwardPacket = new DatagramPacket(fwdData, fwdData.length,
-        // target);
-        // socket.send(forwardPacket);
+        // Sending newly built data
+        DatagramPacket forwardPacket = new DatagramPacket(fwdData, fwdData.length,
+                target);
+        socket.send(forwardPacket);
     }
 
     public void onReceipt(DatagramPacket packet) {
@@ -87,6 +105,9 @@ public class Ingress extends Node {
                     break;
                 case REGCLIENT:
                     registerClient(packet);
+                    break;
+                case REGWORKER:
+                    registerWorker(packet);
                     break;
                 default:
                     System.out.println("Received unexpected packet" + packet.toString());
