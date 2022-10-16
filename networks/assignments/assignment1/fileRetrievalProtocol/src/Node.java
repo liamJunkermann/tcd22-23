@@ -10,7 +10,7 @@ public abstract class Node {
 
     static final int CONTROL_HEADER_LENGTH = 2; // Fixed length of the control header
     static final int TYPE_POS = 0; // Position of type within header
-    static final int SRC_POS = 1; // Position of source index (unused for )
+    static final int SRC_POS = 1; // Position of source index (used only for forwarding functions)
 
     // Packet Types
     /**
