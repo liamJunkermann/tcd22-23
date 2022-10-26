@@ -10,7 +10,9 @@ services:
     networks:
       file_retrieval:
         ipv4_address: 192.168.10.10
-    command: tail -f /dev/null
+    command: java -cp . Ingress
+    depends_on:
+      - "tcpdump"
 
   #clients
   client1:
@@ -28,6 +30,8 @@ services:
     container_name: client2
     image: openjdk:19-jdk-alpine
     working_dir: /file_retrieval
+    depends_on:
+      - "ingress"
     volumes:
       - ./src:/file_retrieval
     networks:
@@ -42,21 +46,25 @@ services:
     working_dir: /file_retrieval
     volumes:
       - ./src:/file_retrieval
+      - ./files:/files
     networks:
       file_retrieval:
         ipv4_address: 192.168.10.40
-    command: tail -f /dev/null
+    command: java -cp . Worker worker1
 
   worker2:
     container_name: worker2
     image: openjdk:19-jdk-alpine
     working_dir: /file_retrieval
+    depends_on:
+      - "ingress"
     volumes:
       - ./src:/file_retrieval
+      - ./files:/files
     networks:
       file_retrieval:
         ipv4_address: 192.168.10.50
-    command: tail -f /dev/null
+    command: java -cp . Worker worker1
 
   tcpdump:
     container_name: tcpdump

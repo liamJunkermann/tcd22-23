@@ -5,7 +5,8 @@ import java.util.Scanner;
 
 public class Client extends Node {
     InetSocketAddress dstAddress;
-    boolean registered;
+    private boolean registered;
+    private boolean blocked;
 
     private Scanner scanner;
 
@@ -20,6 +21,11 @@ public class Client extends Node {
         }
     }
 
+    private void handleFileRes(DatagramPacket packet) throws Exception {
+        String content = getStringData(packet.getData(), packet);
+        System.out.println("File Response:\n\n" + content + "\nEOF\n");
+    }
+
     /**
      * Client onReceipt expecting FWDFileResponse
      */
@@ -28,8 +34,15 @@ public class Client extends Node {
             byte[] data = packet.getData();
 
             switch (data[TYPE_POS]) {
-                case TESTPKT:
-                    System.out.println("\nReceived test packet. Feature may not be implemented yet");
+                case FWDFILERES:
+                    System.out.println("Received file.");
+                    handleFileRes(packet);
+                    blocked = false;
+                    break;
+                case ERRPKT:
+                    System.out.println(
+                            "\nAn error occurred within the Ingress or Worker\nMake sure you've entered a valid file and ensure you have setup the system properly");
+                    blocked = false;
                     break;
                 case REGACK:
                     registered = true;
@@ -51,6 +64,7 @@ public class Client extends Node {
             return true;
         } else {
             // Request file
+            blocked = true;
             System.out.println("Requesting file " + input);
             byte[] data = makeDataByteArray(input);
             data[TYPE_POS] = 0;
@@ -75,7 +89,7 @@ public class Client extends Node {
         boolean finished = false;
 
         while (!finished) {
-            if (registered) {
+            if (registered && !blocked) {
                 finished = handleInput();
             }
         }

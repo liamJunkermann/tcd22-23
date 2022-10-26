@@ -45,7 +45,19 @@ public class Ingress extends Node {
         System.out.println("Sent RegAck Packet");
     }
 
-    // private int count = 0;
+    private synchronized void handleFileResponse(DatagramPacket packet) throws Exception {
+        byte[] receivedData = packet.getData();
+        byte[] buffer = new byte[packet.getLength() - CONTROL_HEADER_LENGTH];
+
+        System.arraycopy(receivedData, CONTROL_HEADER_LENGTH, buffer, 0, buffer.length);
+        InetSocketAddress target = clientMap.get(receivedData[SRC_POS]);
+
+        byte[] fwdData = new byte[CONTROL_HEADER_LENGTH + buffer.length];
+        System.arraycopy(buffer, 0, fwdData, CONTROL_HEADER_LENGTH, buffer.length);
+        fwdData[TYPE_POS] = FWDFILERES;
+        DatagramPacket forwardPacket = new DatagramPacket(fwdData, fwdData.length, target);
+        socket.send(forwardPacket);
+    }
 
     /**
      * handles request for file
@@ -62,15 +74,10 @@ public class Ingress extends Node {
             System.out.println("Worker map has 0 items");
             return;
         }
-        // byte[] tempData = makeDataByteArray("received, not implemented yet");
-        // tempData[TYPE_POS] = FWDFILERES;
 
-        // DatagramPacket tempResp = new DatagramPacket(tempData, tempData.length,
-        // srcAddr);
-        // socket.send(tempResp);
-        // Select target worker
         InetSocketAddress target = workerMap.get(count % workerMap.size());
         count++;
+        System.out.println("Temp Counter " + count);
 
         int clientId;
         if (clientMap.contains(srcAddr)) {
@@ -92,6 +99,15 @@ public class Ingress extends Node {
         socket.send(forwardPacket);
     }
 
+    private synchronized void handleWorkerError(DatagramPacket packet) throws Exception {
+        byte[] errData = new byte[CONTROL_HEADER_LENGTH];
+        errData[TYPE_POS] = ERRPKT;
+
+        DatagramPacket errPacket = new DatagramPacket(errData, errData.length,
+                clientMap.get(packet.getData()[SRC_POS]));
+        socket.send(errPacket);
+    }
+
     public void onReceipt(DatagramPacket packet) {
         try {
             byte[] data = packet.getData();
@@ -100,8 +116,9 @@ public class Ingress extends Node {
                     System.out.println("Received file request");
                     sendFileRequest(packet);
                     break;
-                case TESTPKT:
-                    System.out.println("Received test packet. Feature may not be implemented yet");
+                case FILERES:
+                    System.out.println("Recieved File response.");
+                    handleFileResponse(packet);
                     break;
                 case REGCLIENT:
                     registerClient(packet);
@@ -109,6 +126,12 @@ public class Ingress extends Node {
                 case REGWORKER:
                     registerWorker(packet);
                     break;
+                case ERRPKT:
+                    System.out.println("Worker errored");
+                    if (workerMap.indexOf(packet.getSocketAddress()) != -1) {
+                        handleWorkerError(packet);
+                        break;
+                    }
                 default:
                     System.out.println("Received unexpected packet" + packet.toString());
             }

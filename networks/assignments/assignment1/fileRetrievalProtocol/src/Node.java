@@ -21,7 +21,12 @@ public abstract class Node {
     static final byte FILEREQ = 0;
     static final byte FWDFILEREQ = 1;
     static final byte FILERES = 2;
-    static final byte TESTPKT = 3;
+    /**
+     * General Error Packet
+     * <p>
+     * Used to reset client if error happens in worker
+     */
+    static final byte ERRPKT = 3;
     /**
      * Below two register client to ingress. This is done to pass client address to
      * clientMap
