@@ -64,7 +64,7 @@ services:
     networks:
       file_retrieval:
         ipv4_address: 192.168.10.50
-    command: java -cp . Worker worker1
+    command: java -cp . Worker worker2
 
   tcpdump:
     container_name: tcpdump

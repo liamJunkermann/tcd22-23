@@ -1,9 +1,12 @@
 csu33031_protocol = Proto("csu33031", "File Transfer Protocol")
 packet_type = ProtoField.uint8("csu33031.packet_type", "PacketType", base.DEC)
 source_idx = ProtoField.uint8("csu33031.source_idx", "SourceIdx", base.DEC)
+message0 = ProtoField.uint8("csu33031.message0", "message0", base.DEC)
+message1 = ProtoField.uint8("csu33031.message1", "message1", base.DEC)
+message2 = ProtoField.uint8("csu33031.message2", "message2", base.DEC)
 data_payload = ProtoField.string("csu33031.data_payload", "DataPayload")
 
-csu33031_protocol.fields = { packet_type, source_idx, data_payload }
+csu33031_protocol.fields = { packet_type, source_idx, message0, message1, message2, data_payload }
 
 function get_packet_type(type)
     local type_name = "unknown"
@@ -15,6 +18,7 @@ function get_packet_type(type)
     elseif type == 5 then type_name = "REGWORKER"
     elseif type == 6 then type_name = "REGACK"
     elseif type == 7 then type_name = "FWDFILERES"
+    elseif type == 8 then type_name = "FILEACK"
     end
     return type_name
 end
@@ -32,13 +36,28 @@ function csu33031_protocol.dissector(buffer, pinfo, tree)
     subtree:add_le(packet_type, buffer(0, 1)):append_text(" (" .. type_name .. ")")
 
 
-    if (type_name == "FILERES" or type_name == "FWDFILEREQ") then
+    if (type_name == "FILERES" or type_name == "FWDFILEREQ" or type_name == "FILEACK") then
         subtree:add_le(source_idx, buffer(1, 1))
     end
 
+    if (type_name == "FILEACK") then
+        subtree:add_le(message0, buffer(2, 1))
+        subtree:add_le(message1, buffer(3, 1))
+        return
+    end
+
     if (length > 2) then
-        local content = buffer(2, length - 2):string()
-        subtree:add_le(data_payload, buffer(2, string.len(content)))
+        if (type_name == "FILERES" or type_name == "FWDFILERES") then
+            subtree:add_le(message0, buffer(1, 1))
+            subtree:add_le(message1, buffer(2, 1))
+            subtree:add_le(message2, buffer(3, 1))
+            subtree:add_le(data_payload, buffer(5, length - 5):string())
+            return
+        else
+            local content = buffer(2, length - 2):string()
+            subtree:add_le(data_payload, buffer(2, string.len(content)))
+            return
+        end
     end
 end
 

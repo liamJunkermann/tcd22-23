@@ -45,16 +45,47 @@ public class Ingress extends Node {
         System.out.println("Sent RegAck Packet");
     }
 
+    /**
+     * handle file response from worker to client
+     * 
+     * @param packet
+     * @throws Exception
+     */
     private synchronized void handleFileResponse(DatagramPacket packet) throws Exception {
         byte[] receivedData = packet.getData();
-        byte[] buffer = new byte[packet.getLength() - CONTROL_HEADER_LENGTH];
+        byte[] buffer = getPayloadData(packet);
 
-        System.arraycopy(receivedData, CONTROL_HEADER_LENGTH, buffer, 0, buffer.length);
         InetSocketAddress target = clientMap.get(receivedData[SRC_POS]);
+
+        InetSocketAddress srcAddr = (InetSocketAddress) packet.getSocketAddress();
+        int workerId = workerMap.indexOf(srcAddr);
 
         byte[] fwdData = new byte[CONTROL_HEADER_LENGTH + buffer.length];
         System.arraycopy(buffer, 0, fwdData, CONTROL_HEADER_LENGTH, buffer.length);
         fwdData[TYPE_POS] = FWDFILERES;
+        fwdData[SRC_POS] = (byte) workerId;
+        DatagramPacket forwardPacket = new DatagramPacket(fwdData, fwdData.length, target);
+        socket.send(forwardPacket);
+    }
+
+    /**
+     * handle file ack from client to worker
+     * 
+     * @param packet
+     * @throws Exception
+     */
+    private synchronized void handleFileAck(DatagramPacket packet) throws Exception {
+        byte[] receivedData = packet.getData();
+        byte[] buffer = getPayloadData(packet);
+
+        System.out.println("forwarding data of length " + buffer.length);
+
+        InetSocketAddress target = workerMap.get(receivedData[SRC_POS]);
+
+        byte[] fwdData = new byte[CONTROL_HEADER_LENGTH + buffer.length];
+        System.arraycopy(buffer, 0, fwdData, CONTROL_HEADER_LENGTH, buffer.length);
+        fwdData[TYPE_POS] = FILERESACK;
+        fwdData[SRC_POS] = (byte) clientMap.indexOf((InetSocketAddress) packet.getSocketAddress());
         DatagramPacket forwardPacket = new DatagramPacket(fwdData, fwdData.length, target);
         socket.send(forwardPacket);
     }
@@ -125,6 +156,9 @@ public class Ingress extends Node {
                     break;
                 case REGWORKER:
                     registerWorker(packet);
+                    break;
+                case FILERESACK:
+                    handleFileAck(packet);
                     break;
                 case ERRPKT:
                     System.out.println("Worker errored");

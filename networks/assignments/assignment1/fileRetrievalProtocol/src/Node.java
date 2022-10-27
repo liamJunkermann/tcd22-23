@@ -41,6 +41,13 @@ public abstract class Node {
      */
     static final byte FWDFILERES = 7;
 
+    /**
+     * Forwarded File Response Acknowledgement
+     * <p>
+     * Packet header also includes src idx of client
+     */
+    static final byte FILERESACK = 8;
+
     DatagramSocket socket;
     Listener listener;
     CountDownLatch latch;
@@ -74,6 +81,28 @@ public abstract class Node {
         System.arraycopy(data, CONTROL_HEADER_LENGTH, buffer, 0, buffer.length);
         String string = new String(buffer);
         return string;
+    }
+
+    protected byte[] generatePacketData(byte type, byte src, byte[] payload) {
+        byte[] data = new byte[CONTROL_HEADER_LENGTH + payload.length];
+        System.arraycopy(payload, 0, data, CONTROL_HEADER_LENGTH, payload.length);
+        data[TYPE_POS] = type;
+        data[SRC_POS] = src;
+        return data;
+    }
+
+    protected byte[] generatePacketData(byte type, byte[] payload) {
+        byte[] data = new byte[CONTROL_HEADER_LENGTH + payload.length];
+        System.arraycopy(payload, 0, data, CONTROL_HEADER_LENGTH, payload.length);
+        data[TYPE_POS] = type;
+        return data;
+    }
+
+    protected byte[] getPayloadData(DatagramPacket packet) {
+        byte[] data = packet.getData();
+        byte[] payload = new byte[data.length - CONTROL_HEADER_LENGTH];
+        System.arraycopy(data, CONTROL_HEADER_LENGTH, payload, 0, payload.length);
+        return payload;
     }
 
     class Listener extends Thread {
