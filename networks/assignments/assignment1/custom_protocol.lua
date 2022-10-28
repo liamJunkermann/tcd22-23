@@ -1,12 +1,13 @@
 csu33031_protocol = Proto("csu33031", "File Transfer Protocol")
 packet_type = ProtoField.uint8("csu33031.packet_type", "PacketType", base.DEC)
+packet_name = ProtoField.string("csu33031.packet_name", "PacketName")
 source_idx = ProtoField.uint8("csu33031.source_idx", "SourceIdx", base.DEC)
 message0 = ProtoField.uint8("csu33031.message0", "message0", base.DEC)
 message1 = ProtoField.uint8("csu33031.message1", "message1", base.DEC)
 message2 = ProtoField.uint8("csu33031.message2", "message2", base.DEC)
 data_payload = ProtoField.string("csu33031.data_payload", "DataPayload")
 
-csu33031_protocol.fields = { packet_type, source_idx, message0, message1, message2, data_payload }
+csu33031_protocol.fields = { packet_type, packet_name, source_idx, message0, message1, message2, data_payload }
 
 function get_packet_type(type)
     local type_name = "unknown"
@@ -33,7 +34,8 @@ function csu33031_protocol.dissector(buffer, pinfo, tree)
     local type = buffer(0, 1):le_uint()
     local type_name = get_packet_type(type)
 
-    subtree:add_le(packet_type, buffer(0, 1)):append_text(" (" .. type_name .. ")")
+    subtree:add_le(packet_type, buffer(0, 1)) -- :append_text(" (" .. type_name .. ")")
+    subtree:add_le(packet_name, type_name)
 
 
     if (type_name == "FILERES" or type_name == "FWDFILEREQ" or type_name == "FILEACK") then
