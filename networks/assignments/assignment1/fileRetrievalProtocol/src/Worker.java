@@ -112,7 +112,7 @@ public class Worker extends Node {
         for (int i = 0; i < fileByteArray.length; i = i + 1021) {
             sequenceNumber += 1;
 
-            // Create message
+            // Create message (this is wrapped by our packets)
             byte[] message = new byte[1024]; // First two bytes of the data are for control (datagram integrity and
                                              // order)
             message[0] = (byte) (sequenceNumber >> 8);
@@ -144,9 +144,7 @@ public class Worker extends Node {
                 DatagramPacket ackpack = new DatagramPacket(wrappedAck, wrappedAck.length);
 
                 try {
-                    // socket.setSoTimeout(100); // Waiting for the server to send the ack
-                    socket.receive(ackpack);
-                    System.out.println("Ack Received");
+                    socket.receive(ackpack);// Waiting for the server to send the ack
                     byte[] ack = new byte[2];
                     System.arraycopy(wrappedAck, 2, ack, 0, ack.length);
                     ackSequence = ((ack[0] & 0xff) << 8) + (ack[1] & 0xff); // Figuring the sequence number
@@ -228,6 +226,7 @@ public class Worker extends Node {
 
     public synchronized void start() throws Exception {
         System.out.println("Starting worker " + workerName + " program...");
+        wait(300);
 
         byte[] regData = new byte[CONTROL_HEADER_LENGTH];
         regData[TYPE_POS] = REGWORKER;

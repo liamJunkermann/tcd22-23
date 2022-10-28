@@ -143,6 +143,12 @@ public class Ingress extends Node {
         try {
             byte[] data = packet.getData();
             switch (data[TYPE_POS]) {
+                case REGWORKER:
+                    registerWorker(packet);
+                    break;
+                case REGCLIENT:
+                    registerClient(packet);
+                    break;
                 case FILEREQ:
                     System.out.println("Received file request");
                     sendFileRequest(packet);
@@ -150,12 +156,6 @@ public class Ingress extends Node {
                 case FILERES:
                     System.out.println("Recieved File response.");
                     handleFileResponse(packet);
-                    break;
-                case REGCLIENT:
-                    registerClient(packet);
-                    break;
-                case REGWORKER:
-                    registerWorker(packet);
                     break;
                 case FILERESACK:
                     handleFileAck(packet);

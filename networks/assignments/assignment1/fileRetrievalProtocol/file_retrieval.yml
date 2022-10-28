@@ -50,7 +50,7 @@ services:
     networks:
       file_retrieval:
         ipv4_address: 192.168.10.40
-    command: java -cp . Worker worker1
+    command: java -cp . Worker worker1 # sleep then start worker (gives time for ingress to start)
 
   worker2:
     container_name: worker2
@@ -64,7 +64,7 @@ services:
     networks:
       file_retrieval:
         ipv4_address: 192.168.10.50
-    command: java -cp . Worker worker2
+    command: java -cp . Worker worker2 # sleep then start worker (gives time for ingress to start)
 
   tcpdump:
     container_name: tcpdump
