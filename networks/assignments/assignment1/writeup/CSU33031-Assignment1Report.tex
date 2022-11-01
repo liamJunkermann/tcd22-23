@@ -166,7 +166,7 @@ QUIC operates by establishing a single roundtrip handshake with a client, provid
 %%------------------------------------------------
 \section{Implementation}
 \subsection{Overview}
-This protocol uses a similar approach to QUIC to handle file responses and requests. This has been implemented using three components, configured in a virtual network. These components are an \code{\nameref{subsec:Ingress}}, a \code{\nameref{subsec:Worker}}, and a\code{\nameref{subsec:Client}}. A network would contain one \code{Ingress} node, one to many \code{Worker} nodes, and zero to many \code{Client} nodes. On startup \code{Worker} and \code{Client} nodes register with the \code{Ingress} which then enables the \code{Client}s and \code{Worker}s to interact more efficiently. 
+This protocol uses a similar approach to QUIC to handle file responses and requests with a UDP protocol which utilises basic handshake mechanisms to achieve a basic protocol. This has been implemented using three components, configured in a virtual network. These components are an \code{\nameref{subsec:Ingress}}, a \code{\nameref{subsec:Worker}}, and a\code{\nameref{subsec:Client}}. A network would contain one \code{Ingress} node, one to many \code{Worker} nodes, and zero to many \code{Client} nodes. On startup \code{Worker} and \code{Client} nodes register with the \code{Ingress} which then enables the \code{Client}s and \code{Worker}s to interact more efficiently.
 \subsubsection[Packet]{Packet Overview}
 
 The base packets have a two byte header where byte 0 is the packet type, and byte one is the source index. Byte one is not always used. The packet types, with their respective value are listed below
