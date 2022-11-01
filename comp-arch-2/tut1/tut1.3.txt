@@ -1,0 +1,3 @@
+Tutorial 1, Pt 3
+
+The main components of a Computer Architecture are the instruction set architecture, the organisation and microarchitecture, and the actual hardware. The Instruction Set Architecture is the conversion from Software instructions to the actual hardware. Now, high-level programming mostly manages these interactions making this less prominent. The organisation and microarchitecture are the general considerations of a computers design, how the memory is set up, the design of the cpu, etc. The Microarchitecture is made up of how the different components in the organisation of the system interact. Finally, the actual hardware deals with how the logic circuits are built and manufactured, informing clock rates, and then their power
