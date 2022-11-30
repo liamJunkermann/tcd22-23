@@ -16,13 +16,11 @@ STRATEGY Induction xs :: List
     STRATEGY ReduceBoth
 
     LHS
-
         product ([]++ys)
          = DEF ++.1
         product ys
 
     RHS
-
         product [] * product ys
          = DEF product.1
         1 * product ys
@@ -42,7 +40,6 @@ STRATEGY Induction xs :: List
     STRATEGY ReduceBoth
 
     LHS
-
         product ((x:xs)++ys)
          = DEF ++.2
         product (x:(xs++ys))
@@ -52,7 +49,6 @@ STRATEGY Induction xs :: List
         x * (product xs * product ys)
 
     RHS
-
         product (x:xs) * product ys
          = DEF product.2
         (x * product xs) * product ys

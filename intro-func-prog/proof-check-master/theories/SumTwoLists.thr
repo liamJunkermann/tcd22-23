@@ -12,7 +12,6 @@ THEOREM sum_lists
 STRATEGY ReduceBoth
 
     LHS
-
         sum ((42:[])++(99:[]))
          = DEF ++.2
         sum (42:([]++(99:[])))
@@ -22,7 +21,6 @@ STRATEGY ReduceBoth
         sum (42:99:[])
 
     RHS
-
         sum (42:99:[]) + sum []
          = LAW add_symm l2r
         sum [] + sum (42:99:[])
