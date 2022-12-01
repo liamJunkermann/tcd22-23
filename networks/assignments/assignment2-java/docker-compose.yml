@@ -1,0 +1,138 @@
+version: "2"
+services:
+  controller:
+    container_name: controller
+    image: openjdk:19-jdk-alpine
+    working_dir: /src
+    volumes:
+      - ./src:/src
+    networks:
+      flow-forwarding:
+        ipv4_address: 192.168.10.10
+    command: java -cp . Controller
+# ROUTERS
+  R1:
+    container_name: R1
+    image: openjdk:19-jdk-alpine
+    working_dir: /src
+    volumes:
+      - ./src:/src
+    networks:
+      flow-forwarding:
+        ipv4_address: 192.168.10.20
+    command: java -cp . Router
+    depends_on:
+      - controller
+  R2:
+    container_name: R2
+    image: openjdk:19-jdk-alpine
+    working_dir: /src
+    volumes:
+      - ./src:/src
+    networks:
+      flow-forwarding:
+        ipv4_address: 192.168.10.30
+    command: java -cp . Router
+    depends_on:
+      - controller
+  R3:
+    container_name: R3
+    image: openjdk:19-jdk-alpine
+    working_dir: /src
+    volumes:
+      - ./src:/src
+    networks:
+      flow-forwarding:
+        ipv4_address: 192.168.10.40
+    command: java -cp . Router
+    depends_on:
+      - controller
+  R4:
+    container_name: R4
+    image: openjdk:19-jdk-alpine
+    working_dir: /src
+    volumes:
+      - ./src:/src
+    networks:
+      flow-forwarding:
+        ipv4_address: 192.168.10.50
+    command: java -cp . Router
+    depends_on:
+      - controller
+  R5:
+    container_name: R5
+    image: openjdk:19-jdk-alpine
+    working_dir: /src
+    volumes:
+      - ./src:/src
+    networks:
+      flow-forwarding:
+        ipv4_address: 192.168.10.60
+    command: java -cp . Router
+    depends_on:
+      - controller
+
+# END NODES
+  E1:
+    container_name: E1
+    image: openjdk:19-jdk-alpine
+    working_dir: /src
+    volumes:
+      - ./src:/src
+    networks:
+      flow-forwarding:
+        ipv4_address: 192.168.10.70
+    command: tail -f /dev/null
+    depends_on:
+      - controller
+  E2:
+    container_name: E2
+    image: openjdk:19-jdk-alpine
+    working_dir: /src
+    volumes:
+      - ./src:/src
+    networks:
+      flow-forwarding:
+        ipv4_address: 192.168.10.80
+    command: tail -f /dev/null
+    depends_on:
+      - controller
+  E3:
+    container_name: E3
+    image: openjdk:19-jdk-alpine
+    working_dir: /src
+    volumes:
+      - ./src:/src
+    networks:
+      flow-forwarding:
+        ipv4_address: 192.168.10.90
+    command: tail -f /dev/null
+    depends_on:
+      - controller
+  E4:
+    container_name: E4
+    image: openjdk:19-jdk-alpine
+    working_dir: /src
+    volumes:
+      - ./src:/src
+    networks:
+      flow-forwarding:
+        ipv4_address: 192.168.10.100
+    command: tail -f /dev/null
+    depends_on:
+      - controller
+
+# TCP DUMP
+  tcp_dump:
+    image: kaazing/tcpdump
+    network_mode: "host"
+    volumes:
+      - ./tcpdump:/tcpdump
+
+networks:
+  flow-forwarding:
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.168.10.0/24
+          gateway: 192.168.10.1
