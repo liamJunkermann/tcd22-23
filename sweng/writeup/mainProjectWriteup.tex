@@ -1,0 +1,137 @@
+% Template for Assignment Reports
+
+\documentclass{article}
+
+\usepackage{fancyhdr} % Required for custom headers
+\usepackage{lastpage} % Required to determine the last page for the footer
+\usepackage{extramarks} % Required for headers and footers
+\usepackage{graphicx,color}
+\usepackage{anysize}
+\usepackage{amsmath}
+% \usepackage{natbib}
+\usepackage{caption}
+\usepackage[hidelinks]{hyperref}
+\usepackage{listings,fancyvrb}
+\lstset{
+  basicstyle=\ttfamily,
+  columns=fullflexible,
+  frame=single,
+  breaklines=true,
+  postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space},
+}
+\usepackage{float}
+\usepackage{lipsum}  
+\usepackage{nameref}
+\usepackage{pgf-umlsd}
+\usepackage{subcaption}
+
+% Margins
+%\topmargin=-0.45in
+%\evensidemargin=0in
+%\oddsidemargin=0in
+\textwidth=6.5in
+%\textheight=9.0in
+%\headsep=0.25in 
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage[T1]{fontenc}
+
+\linespread{1.5} % Line spacing
+
+%%------------------------------------------------
+%% Image and Listing code
+%%------------------------------------------------
+%%sw \includecode{caption for table of listings}{caption for reader}{filename}
+\newcommand{\includecode}[3]{\lstinputlisting[float,floatplacement=H, caption={[#1]#2}, captionpos=b, frame=single]{#3}}
+
+
+%%sw \includescalefigure{label}{short caption}{long caption}{scale}{filename}
+\newcommand{\includescalefigure}[5]{
+\begin{figure}[htb]
+\centering
+\includegraphics[width=#4\linewidth]{#5}
+\captionsetup{width=.8\linewidth} 
+\caption[#2]{#3}
+\label{#1}
+\end{figure}
+}
+
+%%sw \includefigure{label}{short caption}{long caption}{filename}
+\newcommand{\includefigure}[4]{
+\begin{figure}[htb]
+\centering
+\includegraphics{#4}
+\captionsetup{width=.8\linewidth} 
+\caption[#2]{#3}
+\label{#1}
+\end{figure}
+}
+
+
+%%------------------------------------------------
+%% Parameters
+%%------------------------------------------------
+% Set up the header and footer
+\pagestyle{fancy}
+\lhead{\authorName} % Top left header
+\chead{\moduleCode\ - \assignmentTitle} % Top center header
+\rhead{\firstxmark} % Top right header
+\lfoot{\lastxmark} % Bottom left footer
+\cfoot{} % Bottom center footer
+\rfoot{Page\ \thepage\ of\ \pageref{LastPage}} % Bottom right footer
+\renewcommand\headrulewidth{0.4pt} % Size of the header rule
+\renewcommand\footrulewidth{0.4pt} % Size of the footer rule
+\setlength\parindent{0pt} % Removes all indentation from paragraphs
+
+\newcommand{\assignmentTitle}{Individual Reflective Essay} % Assignment title
+\newcommand{\moduleCode}{CSU33012} 
+\newcommand{\moduleName}{Software\ Engineering} 
+\newcommand{\authorName}{Liam\ Junkermann} % Your name
+\newcommand{\authorID}{19300141} % Your student ID
+\newcommand{\reportDate}{\printDate}
+\newcommand{\code}[1]{\texttt{#1}}
+
+%%------------------------------------------------
+%%	Title Page
+%%------------------------------------------------
+\title{
+\vspace{-1in}
+\begin{figure}[!ht]
+\flushleft
+\includegraphics[width=0.4\linewidth]{reduced-trinity.png}
+\end{figure}
+\vspace{-0.5cm}
+\hrulefill \\
+\vspace{0.5cm}
+\textmd{\textbf{\moduleCode\ \moduleName}}\\
+\textmd{\textbf{\assignmentTitle}}\\
+\vspace{0.5cm}
+\hrulefill \\
+}
+
+\author{\textbf{\authorName,\ \authorID}}
+
+\date{\today}
+
+
+
+%%------------------------------------------------
+%% Document
+%%------------------------------------------------
+\begin{document}
+\lstset{language=Java, captionpos=b, frame=single, keywordstyle=\color{black}\bfseries, stringstyle=\ttfamily}
+\captionsetup{width=.8\linewidth} 
+
+\maketitle
+% \tableofcontents
+\vspace{0.5in}
+
+This module focused on teaching us how to work in teams. The assignments were all fairly straightforward tasks, aimed at highlighting the collaborative steps and strategies to effectively work in a team. This reflection will focus on the learnings and effectiveness of our team in the main collaborative project.
+
+
+I have a strong background in building, packaging, and deploying web apps at various scales. Therefore I fell into a pseudo-advisory role within the project. As a group we met at least twice a week to work through the project together, as well as being in constant communication through a discord server. Through both these approaches we were able to brainstorm, build, and iterate the idea. Through each of these phases I offered my experience to help inform and make decisions on the project scope, approach, architecure and solution. In group coding sessions I was able to do research on API usage and how best to implement or offer the data, as well as providing support with coding the solution based on my experience.
+
+Most of my experience, though, has been through work done as a single programmer. Learning to work with multiple people on a project from scratch was a challenge I was not expecting and have since learned from. Our repositories branch structure has room for improvement as a result. The steps of experimenting with different apis, to determine the right solution for us, and combining the learnings from each api subteam into the final solution were slightly disjointed. So there are some branches which have competing and unrelated branch histories which have been manually migrated to the final solution branch. 
+
+Our teams journey to the final solution was far from straightforward. THe first task was determining what metrics we were going to try to track. This decision took two meetings across multiple days. Once we settled on comparing weather with commit counts, we began exploring options for where to source data and what our architeture would look like. At first we looked at using Java all members of the team were familiar with the language from college. Webapps built in Java tend to use the Spring boot framework. Setting up springboot, and more importantly, reliably running springboot across everyones different machines and architecures proved difficult so we began exploring other options. Finally we settled on using NodeJS and react, specifically NextJs. NextJs is a web development framework built on React which offers server side rendering for static pages, as well as api functionality allowing us to build functions and api endpoints to consolidate data retrieved from multiple APIs into one request which our frontend can leverage. We decided to use the typescript flavour of NextJs to provide additional reliability and predictability to the solution. Typescript provides static type-checking, not only making intellisense more effective in the IDE but also alerting the developer to any potential mistakes in their code before it is committed, or worse, shipped. Typescript also makes it easier to follow what a React component might be doing and where the data is coming from and what the structure looks like. In a project like this where so many different data sets and datatypes are being collated a tool like typescript is invaluable for the team in speeding along the development process. 
+
+\end{document}
