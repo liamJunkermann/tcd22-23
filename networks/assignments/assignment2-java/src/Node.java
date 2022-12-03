@@ -10,7 +10,7 @@ public abstract class Node {
 
     // Header info idx
     static final int TYPE_POS = 0; // Position of type within header
-    static final int LEN_POS = 1; // Position of source index (used only for forwarding functions)
+    static final int LEN_POS = 1; // Position of destination length
 
     // Packet Types
     static final byte HELLO = 0;
