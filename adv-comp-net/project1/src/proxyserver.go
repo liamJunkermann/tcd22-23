@@ -1,6 +1,7 @@
 package proxyserver
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"net"
@@ -52,15 +53,25 @@ func (p *ProxyServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	p.lg.Infof("%s, %s, %s, Host: %s", r.RemoteAddr, r.Method, r.URL, r.Host)
 	fullUrl := r.Host + r.URL.EscapedPath() + "?" + r.URL.RawQuery
 
-	lsting, err := p.UrlList.Get(fullUrl)
-	if err != nil {
-		lsting = &dynamicblock.DynamicBlock{RemoteAddr: r.RemoteAddr, Method: r.Method, Url: r.Host + "" + r.URL.EscapedPath(), Blocked: false}
-		err = p.UrlList.Set(fullUrl, lsting)
+	_, hasLsting := p.UrlList.Has(fullUrl)
+	if !hasLsting {
+		err := p.UrlList.Set(fullUrl, &dynamicblock.DynamicBlock{RemoteAddr: r.RemoteAddr, Method: r.Method, Url: r.Host + "" + r.URL.EscapedPath(), Blocked: false})
 		if err != nil {
 			http.Error(w, fmt.Sprintf("failed to set lsting, %s", err), http.StatusInternalServerError)
 			return
 		}
 	}
+
+	lsting, err := p.UrlList.Get(fullUrl)
+	if err != nil {
+		if err != nil {
+			http.Error(w, fmt.Sprintf("failed to get lsting, %s", err), http.StatusInternalServerError)
+			return
+		}
+	}
+
+	str, _ := json.Marshal(lsting)
+	p.lg.Debugf("got listing, %s", string(str))
 
 	if !lsting.Blocked {
 		// reqDump, _ := httputil.DumpRequest(r, true)
@@ -68,6 +79,7 @@ func (p *ProxyServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			client := &http.Client{}
 
 			if busy, ok := p.c.Has(fullUrl); !ok {
+				p.lg.Debugf("cache does not have %s", fullUrl)
 				startTime := time.Now()
 				defer busy.Unlock()
 				r.RequestURI = ""
@@ -85,6 +97,7 @@ func (p *ProxyServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 				reader := io.Reader(resp.Body)
 				totalTime := time.Since(startTime)
+				p.lg.Debugf("req took %dms", totalTime.Milliseconds())
 				err = p.c.Put(fullUrl, &reader, uint64(resp.ContentLength), totalTime)
 				if err != nil {
 					http.Error(w, fmt.Sprintf("failed to put to cache, %s", err), http.StatusInternalServerError)

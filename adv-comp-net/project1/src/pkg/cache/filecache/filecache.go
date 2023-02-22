@@ -19,8 +19,8 @@ import (
 type Cache struct {
 	folder       string
 	hash         hash.Hash
-	knownValues  map[string][]byte
-	timingValues map[string]time.Duration
+	KnownValues  map[string][]byte        `json:"known_vals"`
+	TimingValues map[string]time.Duration `json:"timing_vals"`
 	busyValues   map[string]*sync.Mutex
 	mutex        *sync.Mutex
 
@@ -28,28 +28,14 @@ type Cache struct {
 }
 
 func New(path string, lg *logrus.Logger) (*Cache, error) {
-	dir, err := os.ReadDir(path)
-	if err != nil {
-		lg.Debugf("couldn't open cache folder %s creating new folder", err)
-		err := os.MkdirAll(path, os.ModePerm)
-		if err != nil {
-			return nil, fmt.Errorf("could not create cache folder %s, %s", path, err)
-		}
-	}
-
-	values := make(map[string][]byte)
-	// priming values with directory content
-	for _, info := range dir {
-		if !info.IsDir() {
-			values[info.Name()] = nil
-		}
-	}
+	os.RemoveAll(path)
+	os.MkdirAll(path, os.ModePerm)
 
 	cache := &Cache{
 		folder:       path,
 		hash:         sha256.New(),
-		knownValues:  values,
-		timingValues: make(map[string]time.Duration),
+		KnownValues:  make(map[string][]byte),
+		TimingValues: make(map[string]time.Duration),
 		busyValues:   make(map[string]*sync.Mutex),
 		mutex:        &sync.Mutex{},
 		lg:           lg,
@@ -71,7 +57,7 @@ func (c *Cache) Has(key string) (*sync.Mutex, bool) {
 		c.mutex.Lock()
 	}
 
-	if _, found := c.knownValues[hash]; found {
+	if _, found := c.KnownValues[hash]; found {
 		return nil, true
 	}
 
@@ -86,8 +72,9 @@ func (c *Cache) Get(key string) (*io.Reader, error) {
 	hashVal := cache.CalcHash(key)
 
 	c.mutex.Lock()
-	content, ok := c.knownValues[hashVal]
-	timing := c.timingValues[hashVal]
+	content, ok := c.KnownValues[hashVal]
+	timing := c.TimingValues[hashVal]
+	cLen := int64(0)
 	c.mutex.Unlock()
 	if !ok && len(content) > 0 {
 		return nil, fmt.Errorf("key '%s' (%s) not in cache", key, hashVal)
@@ -104,11 +91,16 @@ func (c *Cache) Get(key string) (*io.Reader, error) {
 		}
 
 		response = file
+		stat, err := file.Stat()
+		if err != nil {
+			return nil, fmt.Errorf("error getting size of file %s, %s", hashVal, err)
+		}
+		cLen = stat.Size()
 	} else {
 		response = bytes.NewReader(content)
 	}
 
-	c.lg.Infof("saved %dms and fetching %d bytes", timing.Milliseconds(), len(content))
+	c.lg.Infof("saved %dms and fetching %d bytes", timing.Milliseconds(), cLen)
 	return &response, nil
 }
 
@@ -116,15 +108,15 @@ func (c *Cache) Get(key string) (*io.Reader, error) {
 func (c *Cache) release(hashValue string, content []byte, timing time.Duration) {
 	c.mutex.Lock()
 	delete(c.busyValues, hashValue)
-	c.knownValues[hashValue] = content
-	c.timingValues[hashValue] = timing
+	c.KnownValues[hashValue] = content
+	c.TimingValues[hashValue] = timing
 	c.mutex.Unlock()
 }
 
 func (c *Cache) Put(key string, content *io.Reader, contentLength uint64, timing time.Duration) error {
 	hashVal := cache.CalcHash(key)
 
-	defer c.release(hashVal, nil, time.Since(time.Now()))
+	defer c.release(hashVal, nil, timing)
 	file, err := os.Create(path.Join(c.folder, hashVal))
 	if err != nil {
 		return fmt.Errorf("could not create file %s, %s", hashVal, err)

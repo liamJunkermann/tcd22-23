@@ -38,9 +38,13 @@
     color: white;
   }
 
-  .url-row .url {}
+  /* .url-row .url {
+    
+  }
 
-  .url-row .blocked {}
+  .url-row .blocked {
+    opacity: 75%;
+  } */
 </style>
 
 <body>
@@ -75,7 +79,7 @@
 <script>
   getUrls();
 
-  const urlList = []
+  let urlList = []
   async function handleBlockPressed(status, hash) {
     console.log("handleBlockPressed", status);
     let response;
@@ -112,6 +116,7 @@
     let urlData = await fetch("/urls").then((response) => response.json());
     console.log(urlData);
     // var urlList = "";
+    urlList = []
     for (const key in urlData) {
       const listing = urlData[key];
       const htmlStr = `
@@ -134,7 +139,8 @@
   function updateHtml() {
     console.log(urlList)
     var fullHtmlStr = ""
-    urlList.forEach(val => fullHtmlStr += "\n" + val.html)
+    document.getElementById("url-col").innerHTML = ""
+    urlList.map(val => fullHtmlStr += "\n" + val.html)
     document.getElementById("url-col").innerHTML = fullHtmlStr;
   }
 

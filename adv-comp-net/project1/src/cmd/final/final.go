@@ -18,6 +18,7 @@ func main() {
 	flag.Parse()
 
 	lg := logrus.New()
+	lg.SetLevel(logrus.DebugLevel)
 
 	cache, err := filecache.New("cache", lg)
 	if err != nil {

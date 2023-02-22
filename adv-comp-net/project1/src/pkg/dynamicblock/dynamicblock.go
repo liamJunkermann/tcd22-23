@@ -82,30 +82,27 @@ func (l *UrlList) Set(key string, lsting *DynamicBlock) error {
 	return nil
 }
 
-func (l *UrlList) Block(key string) (*DynamicBlock, error) {
-	hash := cache.CalcHash(key)
+func (l *UrlList) Block(hash string) (*DynamicBlock, error) {
 
 	l.mutex.Lock()
 	lsting, ok := l.UrlVals[hash]
 	l.mutex.Unlock()
 
 	if !ok {
-		return nil, fmt.Errorf("%s (%s) not found", key, hash)
+		return nil, fmt.Errorf("hash %s not found", hash)
 	}
 	lsting.Blocked = true
 	defer l.release(hash, lsting)
 	return &lsting, nil
 }
 
-func (l *UrlList) Unblock(key string) (*DynamicBlock, error) {
-	hash := cache.CalcHash(key)
-
+func (l *UrlList) Unblock(hash string) (*DynamicBlock, error) {
 	l.mutex.Lock()
 	lsting, ok := l.UrlVals[hash]
 	l.mutex.Unlock()
 
 	if !ok {
-		return nil, fmt.Errorf("%s (%s) not found", key, hash)
+		return nil, fmt.Errorf("hash %s not found", hash)
 	}
 	lsting.Blocked = false
 	defer l.release(hash, lsting)
