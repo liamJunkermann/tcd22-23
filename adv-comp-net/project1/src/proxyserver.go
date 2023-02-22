@@ -122,29 +122,37 @@ func (p *ProxyServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			if !strings.Contains(r.Host, ":") {
 				r.Host += ":80"
 			}
-			srvConn, err := net.Dial("tcp", r.Host)
+
+			srvConn, err := net.DialTimeout("tcp", r.Host, 10*time.Second)
 			if err != nil {
-				http.Error(w, fmt.Sprintf("dial failed, %s", err), http.StatusInternalServerError)
-				p.lg.Error(err)
+				http.Error(w, err.Error(), http.StatusServiceUnavailable)
+				return
+			}
+			p.lg.Debug("created srvConn")
+
+			w.WriteHeader(http.StatusOK)
+			hj, ok := w.(http.Hijacker)
+			if !ok {
+				http.Error(w, "Hijacking not supported", http.StatusInternalServerError)
 				return
 			}
 
-			hj, _ := w.(http.Hijacker)
-			clientConn, _, hjErr := hj.Hijack()
-			if hjErr != nil {
-				http.Error(w, fmt.Sprintf("hijack failed, %s", err), http.StatusInternalServerError)
-				p.lg.Error(err)
-				return
-			}
-
-			clientConn.Write([]byte("HTTP/1.0 200 OK\r\n\r"))
-			go io.Copy(clientConn, srvConn)
-			_, err = io.Copy(srvConn, clientConn)
+			clientConn, _, err := hj.Hijack()
 			if err != nil {
-				p.lg.Error(err)
+				http.Error(w, err.Error(), http.StatusServiceUnavailable)
 			}
+			go transfer(srvConn, clientConn)
+			go transfer(clientConn, srvConn)
+
+			p.lg.Debug("here now")
 		}
 	} else {
 		http.Error(w, "Proxy Blocked", http.StatusForbidden)
 	}
+}
+
+func transfer(destination io.WriteCloser, source io.ReadCloser) {
+	defer destination.Close()
+	defer source.Close()
+	io.Copy(destination, source)
 }
