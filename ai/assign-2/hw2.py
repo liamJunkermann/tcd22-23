@@ -44,7 +44,7 @@ else:
     import tkinter as tk
 
 # =============================
-N_training = 5   # The number of training episodes
+N_training = 50  # The number of training episodes
 
 decay_reward = 0.9  # Discount gamma for delayed reward
 
