@@ -1,0 +1,122 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+
+\usepackage{fancyhdr} 
+\usepackage{lastpage} 
+\usepackage{extramarks} 
+\usepackage{graphicx,color}
+\usepackage{anysize}
+\usepackage{amsmath}
+\usepackage{natbib}
+\usepackage{caption}
+\usepackage{float}
+\usepackage{url}
+\usepackage{listings}
+\usepackage[svgnames]{xcolor}
+\usepackage[colorlinks=true, linkcolor=Black, urlcolor=Black]{hyperref}
+\usepackage[small]{titlesec}
+
+\textwidth=6.5in
+\linespread{1.0} % Line spacing
+\renewcommand{\familydefault}{\sfdefault}
+
+\titleformat{\section}[wrap]
+{\normalfont\bfseries}
+{\thesection.}{0.5em}{}
+
+\titlespacing{\section}{12pc}{1.5ex plus .1ex minus .2ex}{1pc}
+
+%% includescalefigure:
+%% \includescalefigure{label}{short caption}{long caption}{scale}{filename}
+%% - includes a figure with a given label, a short caption for the table of contents and a longer caption that describes the figure in some detail and a scale factor 'scale'
+\newcommand{\includescalefigure}[5]{
+\begin{figure}[H]
+\centering
+\includegraphics[width=#4\linewidth]{#5}
+\captionsetup{width=.8\linewidth} 
+\caption[#2]{#3}
+\label{#1}
+\end{figure}
+}
+
+%% includefigure:
+%% \includefigure{label}{short caption}{long caption}{filename}
+%% - includes a figure with a given label, a short caption for the table of contents and a longer caption that describes the figure in some detail
+\newcommand{\includefigure}[4]{
+\begin{figure}[H]
+\centering
+\includegraphics{#4}
+\captionsetup{width=.8\linewidth} 
+\caption[#2]{#3}
+\label{#1}
+\end{figure}
+}
+
+%%------------------------------------------------
+%% Parameters
+%%------------------------------------------------
+% Set up the header and footer
+\pagestyle{fancy}
+\lhead{\authorName} % Top left header
+\chead{\moduleCode\ - \assignmentTitle} % Top center header
+\rhead{\firstxmark} % Top right header
+\lfoot{\lastxmark} % Bottom left footer
+\cfoot{} % Bottom center footer
+\rfoot{Page\ \thepage\ of\ \pageref{LastPage}} % Bottom right footer
+\renewcommand\headrulewidth{0.4pt} % Size of the header rule
+\renewcommand\footrulewidth{0.4pt} % Size of the footer rule
+
+\setlength\parindent{0pt} % Removes all indentation from paragraphs
+\newcommand{\assignmentTitle}{Group Assignment 1 - Energy}
+\newcommand{\moduleCode}{TEU00041} 
+\newcommand{\moduleName}{Advanced Computer Networks} 
+\newcommand{\authorName}{Liam Junkermann} 
+\newcommand{\authorID}{19300141}
+\newcommand{\reportDate}{\today}
+\renewcommand{\abstractname}{Introduction}
+
+\title{
+    \vspace{-1in}
+    \begin{figure}[!ht]
+    \flushleft
+    \includegraphics[width=0.4\linewidth]{reduced-trinity.png}
+    \end{figure}
+    \vspace{-0.5cm}
+    \hrulefill \\
+    \vspace{1cm}
+    \textmd{\textbf{\moduleCode\ \moduleName}}\\
+    \textmd{\textbf{\assignmentTitle}}\\
+    \textmd{\authorName\ - \authorID}\\
+    \textmd{\reportDate}\\
+    \vspace{0.5cm}
+    \hrulefill \\
+}
+\date{}
+\author{}
+
+\begin{document}
+    \lstset{language=bash, float=h, captionpos=b, frame=single, numbers=left, numberblanklines=false, numberstyle=\tiny, numbersep=1mm, framexleftmargin=3mm, xleftmargin=5mm, aboveskip=3mm, breaklines=true}
+    \captionsetup{width=.8\linewidth} 
+
+    \maketitle
+    \begin{abstract}
+        Your group has been tasked with developing a strategy for dealing with the short-term acute energy crisis that Ireland and the rest of Europe is facing. Yours brief is to concentrate on measures that could mitigate the crisis for the next three years, with a special focus on the coming winter. Your brief recognises that there are two potential but related problems: first, the risk of interruption in the supply of energy, particular natural gas; and second, the problem of increased energy costs. Your primary objective is to explore methods of ensuring that Irish residents have supplies of electricity and heating but should also consider the economic aspects of the problem. 
+    \end{abstract}
+    \tableofcontents
+    \newpage
+
+    \section{Short-term Mitigations}
+    Detail your proposed mitigation measures. These measures should be classified into two categories: actions that can be implemented within the next three months (winter 2022/23), and actions that can be put in place for the winters of 2023/24 and 2024/25.
+    \newline
+
+
+    \section{Risks}
+    For each of your proposed actions, identify any risks that could prevent the action being implemented or being effective, plus any further steps that could be take to mitigate these risks
+    \newline
+
+
+    \section{Long-Term Strategy}
+    In parallel you have been asked to develop a medium to long term strategy for energy provision in Ireland. The overall aims of the strategy will be to: reduce carbon emissions to a minimum, ensure robustness of supply and ensure cost competitiveness. Your strategy should cover all forms of energy usage and should address the issues of energy storage and transport energy demands explicitly.
+    \newline
+    
+\end{document}
