@@ -1,18 +1,17 @@
 "use client";
 
-import { Container, Paper, Title } from "@mantine/core";
+import { ProfileEditor } from "@/components/ProfileEditor/ProfileEditor";
+import { useAuthContext } from "@/contexts/auth/auth.context";
+import { Container } from "@mantine/core";
 
 export default function ProfilePage() {
-  return (
-    <Container>
-      <Paper
-        radius="md"
-        p="xl"
-        withBorder
-        sx={{ display: "flex", flexDirection: "column", gap: 10 }}
-      >
-        <Title>Your Profile</Title>
-      </Paper>
-    </Container>
-  );
+  const { user } = useAuthContext();
+
+  if (user) {
+    return (
+      <Container>
+        <ProfileEditor user={user} />
+      </Container>
+    );
+  }
 }

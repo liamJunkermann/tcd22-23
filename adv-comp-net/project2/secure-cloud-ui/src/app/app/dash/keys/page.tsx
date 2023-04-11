@@ -1,4 +1,5 @@
 "use client";
+import { useAuthContext } from "@/contexts/auth/auth.context";
 import { useKey } from "@/contexts/key/key.context";
 import { KeyReducerTypes } from "@/contexts/key/key.reducer";
 import { generateUserKeys } from "@/utils/crypto";
@@ -16,20 +17,28 @@ export default function KeyPage() {
 }
 
 function KeyManagerPage() {
+  const { user } = useAuthContext();
   const {
-    keyState: { userKey },
+    keyState: { userKey, uid },
     keyDispatch: dispatch,
   } = useKey();
 
   async function generateKeys() {
-    console.log("generating key pair");
-    const keyPair = await generateUserKeys();
-    console.log(`generated pair ${JSON.stringify(keyPair)}`);
-    dispatch({ type: KeyReducerTypes.SetKey, payload: keyPair });
-    console.log("dispatched");
+    if (user) {
+      console.log("generating key pair");
+      const keyPair = await generateUserKeys();
+      console.log(`generated pair ${JSON.stringify(keyPair)}`);
+      dispatch({ type: KeyReducerTypes.SetKey, payload: keyPair });
+      dispatch({ type: KeyReducerTypes.SetUid, payload: user?.uid });
+      console.log("dispatched");
+    }
   }
 
-  if (userKey.privateKey != undefined && userKey.publicKey != undefined) {
+  if (
+    userKey.privateKey != undefined &&
+    userKey.publicKey != undefined &&
+    uid === user?.uid
+  ) {
     return (
       <>
         <Text>Found Keys!</Text>

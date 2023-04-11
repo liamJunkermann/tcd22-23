@@ -1,3 +1,4 @@
+import logout from "@/firebase/auth/logout";
 import {
   Code,
   createStyles,
@@ -141,7 +142,10 @@ export function NavbarSimple({
         <a
           href="#"
           className={classes.link}
-          onClick={(event) => event.preventDefault()}
+          onClick={(event) => {
+            event.preventDefault();
+            logout();
+          }}
         >
           <IconLogout className={classes.linkIcon} stroke={1.5} />
           <span>Logout</span>

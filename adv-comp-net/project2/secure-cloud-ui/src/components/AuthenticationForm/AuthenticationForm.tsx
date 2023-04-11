@@ -60,11 +60,13 @@ export function AuthenticationForm(props: PaperProps) {
           setLoading();
           if (type == "register") {
             const { result, error } = await signUp(
+              values.name,
               values.email,
               values.password
             );
 
             if (error) {
+              setLoading();
               return console.log(error);
             }
 
@@ -78,6 +80,7 @@ export function AuthenticationForm(props: PaperProps) {
             );
 
             if (error) {
+              setLoading();
               return console.log(error);
             }
 

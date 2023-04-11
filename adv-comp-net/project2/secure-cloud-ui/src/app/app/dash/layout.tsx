@@ -20,7 +20,7 @@ export default function DashLayout({
   const theme = useMantineTheme();
   const [opened, setOpened] = useState(false);
   const pathname = usePathname();
-  const { user } = useAuthContext();
+  const { user, userData } = useAuthContext();
 
   const router = useRouter();
 
@@ -62,9 +62,15 @@ export default function DashLayout({
 
             <Text>
               Secure Cloud Application - Welcome{" "}
-              <span style={{ fontFamily: "monospace" }}>
-                {user?.displayName || user?.email?.split("@")[0]}
-              </span>
+              {(
+                <span style={{ fontWeight: "bold" }}>
+                  {userData?.displayName}
+                </span>
+              ) || (
+                <span style={{ fontFamily: "monospace" }}>
+                  {user?.email?.split("@")[0]}
+                </span>
+              )}
             </Text>
           </div>
         </Header>

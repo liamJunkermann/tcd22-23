@@ -1,18 +1,20 @@
 import { getContext, storeContext } from "@/utils/context.util";
 import React from "react";
-import { KeyActions, keyReducer } from "./key.reducer";
+import { KeyActions, keyReducer, uidReducer } from "./key.reducer";
 
 type KeyStateType = {
   userKey: {
     publicKey: JsonWebKey | undefined;
     privateKey: JsonWebKey | undefined;
   };
+  uid: string;
 };
 const nullKeyState = {
   userKey: {
     publicKey: undefined,
     privateKey: undefined,
   },
+  uid: "",
 };
 
 const KEY_STORAGE_TOKEN = "key";
@@ -34,8 +36,12 @@ export const KeyContext = React.createContext<{
 }>({ keyState: initialState(), keyDispatch: () => null });
 KeyContext.displayName = "KeyContext";
 
-const keyContextReducer = ({ userKey }: KeyStateType, action: KeyActions) => ({
+const keyContextReducer = (
+  { userKey, uid }: KeyStateType,
+  action: KeyActions
+) => ({
   userKey: keyReducer(userKey, action),
+  uid: uidReducer(uid, action),
 });
 
 export const useKey = () => React.useContext(KeyContext);
@@ -46,7 +52,6 @@ export function KeyProvider({ children }: { children?: React.ReactNode }) {
   );
 
   React.useEffect(() => {
-    console.log("keystate change");
     storeContext<KeyStateType>(KEY_STORAGE_TOKEN, keyState);
   }, [keyState]);
 
