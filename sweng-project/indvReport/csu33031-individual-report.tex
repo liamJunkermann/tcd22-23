@@ -1,0 +1,109 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+
+\usepackage{fancyhdr} 
+\usepackage{lastpage} 
+\usepackage{extramarks} 
+\usepackage{graphicx,color}
+\usepackage{anysize}
+\usepackage{amsmath}
+\usepackage{natbib}
+\usepackage{caption}
+\usepackage{float}
+\usepackage{url}
+\usepackage{listings}
+\usepackage[svgnames]{xcolor}
+\usepackage[colorlinks=true, linkcolor=Black, urlcolor=Black]{hyperref}
+\usepackage[small]{titlesec}
+\usepackage{mhchem}
+\usepackage{linegoal}
+\usepackage{wrapfig}
+
+
+\textwidth=6.5in
+\linespread{1.5} % Line spacing
+\renewcommand{\familydefault}{\sfdefault}
+
+% \titleformat{\section}
+% {\normalfont\bfseries}
+% {\thesection.}{0.75em}{}
+
+\titlespacing{\section}{0pt}{0pt}{0pt}
+
+%% includescalefigure:
+%% \includescalefigure{label}{short caption}{long caption}{scale}{filename}
+%% - includes a figure with a given label, a short caption for the table of contents and a longer caption that describes the figure in some detail and a scale factor 'scale'
+\newcommand{\includescalefigure}[5]{
+\begin{figure}[H]
+\centering
+\includegraphics[width=#4\linewidth]{#5}
+\captionsetup{width=.8\linewidth} 
+\caption[#2]{#3}
+\label{#1}
+\end{figure}
+}
+
+%% includefigure:
+%% \includefigure{label}{short caption}{long caption}{filename}
+%% - includes a figure with a given label, a short caption for the table of contents and a longer caption that describes the figure in some detail
+\newcommand{\includefigure}[4]{
+\begin{figure}[H]
+\centering
+\includegraphics{#4}
+\captionsetup{width=.8\linewidth} 
+\caption[#2]{#3}
+\label{#1}
+\end{figure}
+}
+
+%%------------------------------------------------
+%% Parameters
+%%------------------------------------------------
+% Set up the header and footer
+\pagestyle{fancy}
+\lhead{\authorName} % Top left header
+\chead{\moduleCode\ - \assignmentTitle} % Top center header
+\rhead{\firstxmark} % Top right header
+\lfoot{\lastxmark} % Bottom left footer
+\cfoot{} % Bottom center footer
+\rfoot{Page\ \thepage\ of\ \pageref{LastPage}} % Bottom right footer
+\renewcommand\headrulewidth{0.4pt} % Size of the header rule
+\renewcommand\footrulewidth{0.4pt} % Size of the footer rule
+
+\fancypagestyle{plain}{%
+  \renewcommand{\headrulewidth}{0pt}%
+  \fancyhf{}%
+  \rfoot{Page\ \thepage\ of\ \pageref{LastPage}} % Bottom right footer
+}
+
+% \setlength\parindent{0pt} % Removes all indentation from paragraphs
+\newcommand{\assignmentTitle}{Individual Reflective Report}
+\newcommand{\moduleCode}{CSU33031} 
+\newcommand{\moduleName}{Software Engineering Project II} 
+\newcommand{\authorName}{Liam Junkermann} 
+\newcommand{\authorID}{19300141}
+\newcommand{\reportDate}{\today}
+
+\title{
+    \vspace{-1in}
+    \textmd{\textbf{\moduleCode\ \moduleName}}\\
+    \textmd{\textbf{\assignmentTitle}}\\
+    \textmd{\authorName\ - \authorID}\\
+}
+\date{}
+\author{}
+
+\begin{document}
+    \captionsetup{width=.8\linewidth} 
+
+    \maketitle
+
+    Managing such a short-term project with such variation in experience is quite difficult. In the early stage of the project (first two weeks) the management team, made up of third years, worked to breakdown the requirements of the project while trying to gauge the experience, knowledge and effectiveness of each member of the development team, our second year team members. Understanding the scope and target outcome of this project was something I found particularly difficult, through discussions with the client and spending more time exploring the spec the target outcome became more clear. Once we understood what a final product could look like, we were able to build a task backlog to begin to plan sprints and work from. The planning of these sprints was focused around two major points. First, a sprint that was manageable for the second-year developers. This meant ensuring the individual tasks were of appropriate complexity and size that, even with other college and life commitments, they were able to reasonably complete the tasks and the necessary research and learning that came from those tasks. Second, the task directly contributed to the final result. Given how short this project was, it was important that each task was scoped appropriately to build toward a coherent end product without adding too many unnecessary features.
+
+    Working in a team for a college project, even one structured to emulate a working team, is quite different than working on a project. The commitments of certain team members can be variable and working to predict and mitigate the impact of variable, and sometimes non-, commitment of time, effort, and effectiveness takes up most of the energy involved in managing and executing the project. It is always important to continue to build the skills necessary to effectively collaborate and communicate as a team and this project especially was an opportunity to practice encouraging and leading the execution and development of those skills both personally and with other members of the team.
+
+    Throughout this project there were instances where members of the team became unreachable and unresponsive. Some members even missing most of the meetings for the first two weeks where the management team were working to understand the boundary of team-member's skills and experience in order to effectively build sub-teams to work on different components of research or the final project. While we were able to wrangle most members together by the midpoint of the project, some members remained reluctant to join in on team discussions and as a result their impact on the project actually became negative. This was an opportunity to learn how to deal with a team member who hinders the effectiveness of the whole team, as well as learning to manage energy effectively to continue to maximise productivity from the engaged and responsive members of the team.
+
+    This project was an opportunity for me to learn and highlight qualities in a software engineer which make them easier, or more difficult, to work with. I am working on a project outside college that requires me to both build and manage a growing team and this project gave me an excellent opportunity to try different management and leadership tactics. Through trying these different tactics, and observing the response from different members of the development team, I was able to highlight certain qualities which led to them being more, or less, effective to the team — and in some cases actively hindering the team. This learning is something I can bring into decision making when building and managing my own team.
+
+\end{document}
