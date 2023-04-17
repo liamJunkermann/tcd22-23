@@ -36,8 +36,12 @@ export async function encryptUserData(data: Buffer, publicKey: JsonWebKey) {
     true,
     ["encrypt"]
   );
-  const buf = await window.crypto.subtle.encrypt("RSA-OAEP", key, data);
-  return new TextDecoder().decode(buf);
+  const buf = await window.crypto.subtle.encrypt(
+    { name: "RSA-OAEP" },
+    key,
+    data
+  );
+  return Buffer.from(buf).toString("hex");
 }
 
 /**
@@ -46,15 +50,21 @@ export async function encryptUserData(data: Buffer, publicKey: JsonWebKey) {
  * @param privateKey the private key to decrypt with
  */
 export async function decryptUserData(data: Buffer, privateKey: JsonWebKey) {
-  const key = await window.crypto.subtle.importKey(
-    "jwk",
-    privateKey,
-    { name: "RSA-OAEP", hash: "SHA-256" },
-    true,
-    ["decrypt"]
-  );
-  const res = await window.crypto.subtle.decrypt("RSA-OAEP", key, data);
-  return new TextDecoder().decode(res);
+  const key = await window.crypto.subtle
+    .importKey("jwk", privateKey, { name: "RSA-OAEP", hash: "SHA-256" }, true, [
+      "decrypt",
+    ])
+    .catch((e) => {
+      console.error("something diedin key import, ", e);
+      throw new Error(`failed to import key ${e}`);
+    });
+  const res = await window.crypto.subtle
+    .decrypt({ name: "RSA-OAEP" }, key, data)
+    .catch((e) => {
+      console.error("something died in decryption, ", e);
+      throw new Error(`failed to decrypt key ${e}`);
+    });
+  return Buffer.from(res).toString("hex");
 }
 
 /**
@@ -65,50 +75,49 @@ export async function decryptUserData(data: Buffer, privateKey: JsonWebKey) {
  */
 export function encryptData(data: string, key: string) {
   console.log(`got key string ${key}`);
-  const key_in_bytes = Buffer.from(key, "base64");
+  const key_in_bytes = Buffer.from(key, "hex");
   console.log(
-    `converted to ${key_in_bytes.length} bytes, ${key_in_bytes.toString(
-      "base64"
-    )}`
+    `converted to ${key_in_bytes.length} bytes, ${key_in_bytes.toString("hex")}`
   );
   const cipher = crypto.createCipheriv(
     "aes-128-cbc",
     key_in_bytes.subarray(16, 32),
     key_in_bytes.subarray(0, 16)
   );
-  let encrypted = cipher.update(data, "utf-8", "base64");
-  encrypted += cipher.final("base64");
+  let encrypted = cipher.update(data, "utf-8", "hex");
+  encrypted += cipher.final("hex");
   return encrypted;
 }
 
 export function generateRandomKey(bytes: number) {
   const rand = crypto.randomBytes(bytes);
-  return rand.toString("base64");
+  return rand.toString("hex");
 }
 /**
  *
- * @param encData the encrypted data in base64 format
+ * @param encData the encrypted data in hex format
  * @param key the randomly generated key, stored alongside data in an encrypted format (or password is key in case of user private keys)
  * @returns the plaintext data
  */
 export async function decryptData(encData: string, key: string) {
   try {
     console.log(`got key string ${key}`);
-    const key_in_bytes = Buffer.from(key, "base64");
+    const key_in_bytes = Buffer.from(key, "hex");
     console.log(
       `converted to ${key_in_bytes.length} bytes, ${key_in_bytes.toString(
-        "base64"
+        "hex"
       )}`
     );
     const cipher = crypto.createDecipheriv(
       "aes-128-cbc",
       key_in_bytes.subarray(16, 32),
-      key_in_bytes.subarray(0, 15)
+      key_in_bytes.subarray(0, 16)
     );
-    let res = cipher.update(encData, "base64", "utf-8");
+    let res = cipher.update(encData, "hex", "utf-8");
     res += cipher.final("utf-8");
     return res;
-  } catch (_) {
-    throw new Error("decryption failed");
+  } catch (e) {
+    console.log(`error happened: ${e}`);
+    throw new Error(`decryption failed, ${e}`);
   }
 }

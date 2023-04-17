@@ -1,3 +1,4 @@
+import { UserDocumentData } from "@/constants";
 import { useAuthContext } from "@/contexts/auth/auth.context";
 import { useKey } from "@/contexts/key/key.context";
 import addData from "@/firebase/firestore/addData";
@@ -42,7 +43,7 @@ export function FileEncryptionForm(props: FileEncryptionFormProps) {
     const randKey = generateRandomKey(32);
     setEncKey(randKey);
 
-    const buf = Buffer.from(randKey, "base64");
+    const buf = Buffer.from(randKey, "hex");
     console.log(
       `generated key ${buf.subarray(16, 32).length} and iv ${
         buf.subarray(0, 16).length
@@ -79,20 +80,22 @@ export function FileEncryptionForm(props: FileEncryptionFormProps) {
 
       // next encrypt file key (with current users public key)
       const secured_key = await encryptUserData(
-        Buffer.from(encKey, "base64"),
+        Buffer.from(encKey, "hex"),
         userKey.publicKey
       );
+      console.log(`encrypted key ${secured_key}`);
 
       // finally upload file ref and secured key
-      const { result, error } = await addData(user.uid, file.name, {
+      const uploadData: UserDocumentData = {
         fileRef: up.ref.fullPath,
         secured_key,
-      });
+      };
+      const { error } = await addData(user.uid, file.name, uploadData);
       if (error) {
         console.error(`an error occurred during addData, ${error}`);
       }
 
-      console.log(result);
+      console.log(`upload complete, ${JSON.stringify(uploadData)}`);
       loaded();
       props.onComplete();
     }
@@ -173,7 +176,7 @@ export function FileEncryptionForm(props: FileEncryptionFormProps) {
                 borderRadius: 5,
               }}
             >
-              {file.type == "plain/text"
+              {file.type == "text/plain"
                 ? fileText
                 : `preview of type ${file.type} not currently supported`}
             </div>

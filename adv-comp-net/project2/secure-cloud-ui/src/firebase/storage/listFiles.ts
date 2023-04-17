@@ -11,9 +11,9 @@ export default async function listFiles(path: string) {
   return getFileNames(storageRef)
 }
 
-async function getFileNames(ref: StorageReference): Promise<string[]> {
+async function getFileNames(ref: StorageReference): Promise<StorageReference[]> {
   const list = await listAll(ref);
-  const itemList = list.items.map((itemRef) => itemRef.name);
+  const itemList = list.items.map((itemRef) => itemRef);
   const prefixList = await (
     await Promise.all(
       list.prefixes.flatMap(async (folderRef) => await getFileNames(folderRef))

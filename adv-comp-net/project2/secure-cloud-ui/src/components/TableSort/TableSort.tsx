@@ -9,6 +9,8 @@ import {
   Center,
   TextInput,
   rem,
+  ActionIcon,
+  Tooltip,
 } from "@mantine/core";
 import { keys } from "@mantine/utils";
 import {
@@ -16,6 +18,8 @@ import {
   IconChevronDown,
   IconChevronUp,
   IconSearch,
+  IconDownload,
+  IconShare,
 } from "@tabler/icons-react";
 
 const useStyles = createStyles((theme) => ({
@@ -43,12 +47,14 @@ const useStyles = createStyles((theme) => ({
 }));
 
 export interface RowData {
+  fullPath: string;
   filename: string;
   owner: string;
 }
 
 interface TableSortProps {
   data: RowData[];
+  onAction: (rowItem: RowData, action: string) => void;
 }
 
 interface ThProps {
@@ -110,11 +116,13 @@ function sortData(
   );
 }
 
-export function TableSort({ data }: TableSortProps) {
+export function TableSort({ data, onAction }: TableSortProps) {
   const [search, setSearch] = useState("");
   const [sortedData, setSortedData] = useState(data);
   const [sortBy, setSortBy] = useState<keyof RowData | null>(null);
   const [reverseSortDirection, setReverseSortDirection] = useState(false);
+
+  const { classes } = useStyles();
 
   const setSorting = (field: keyof RowData) => {
     const reversed = field === sortBy ? !reverseSortDirection : false;
@@ -137,10 +145,38 @@ export function TableSort({ data }: TableSortProps) {
       );
   };
 
+  const actionButtons = [
+    {
+      icon: IconDownload,
+      key: "download",
+      tooltip: "Download File",
+    },
+    {
+      icon: IconShare,
+      key: "share",
+      tooltip: "Share File",
+    },
+  ];
+
   const rows = sortedData.map((row) => (
     <tr key={row.filename}>
       <td>{row.filename}</td>
       <td>{row.owner}</td>
+      <td>
+        <Group spacing="xs">
+          {actionButtons.map((btn) => (
+            <Tooltip label={btn.tooltip} key={`btn-${btn.key}`}>
+              <ActionIcon
+                variant="outline"
+                size="sm"
+                onClick={() => onAction(row, btn.key)}
+              >
+                <btn.icon size="0.875rem" />
+              </ActionIcon>
+            </Tooltip>
+          ))}
+        </Group>
+      </td>
     </tr>
   ));
 
@@ -175,6 +211,9 @@ export function TableSort({ data }: TableSortProps) {
             >
               Owner
             </Th>
+            <th className={classes.th} style={{ alignItems: "end" }}>
+              Actions
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -182,7 +221,7 @@ export function TableSort({ data }: TableSortProps) {
             rows
           ) : (
             <tr>
-              <td colSpan={2}>
+              <td colSpan={3}>
                 <Text weight={500} align="center">
                   Nothing found
                 </Text>

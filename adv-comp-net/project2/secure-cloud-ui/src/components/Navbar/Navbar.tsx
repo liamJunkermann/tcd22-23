@@ -115,42 +115,44 @@ export function NavbarSimple({
   ));
 
   return (
-    <Navbar
-      width={{ sm: 200, lg: 300 }}
-      p="md"
-      hiddenBreakpoint="sm"
-      hidden={hidden}
-    >
-      <Navbar.Section grow>
-        <Group className={classes.header} position="apart">
-          Secure Your Cloud
-          <Code sx={{ fontWeight: 700 }}>v0.1.0</Code>
-        </Group>
-        {links}
-      </Navbar.Section>
+    <>
+      <Navbar
+        width={{ sm: 200, lg: 300 }}
+        p="md"
+        hiddenBreakpoint="sm"
+        hidden={hidden}
+      >
+        <Navbar.Section grow>
+          <Group className={classes.header} position="apart">
+            Secure Your Cloud
+            <Code sx={{ fontWeight: 700 }}>v0.1.0</Code>
+          </Group>
+          {links}
+        </Navbar.Section>
 
-      <Navbar.Section className={classes.footer}>
-        <Link
-          href="/app/dash/profile"
-          className={cx(classes.link, {
-            [classes.linkActive]: "profile" === active.replace(regex, ""),
-          })}
-        >
-          <IconUser className={classes.linkIcon} stroke={1.5} />
-          Profile
-        </Link>
-        <a
-          href="#"
-          className={classes.link}
-          onClick={(event) => {
-            event.preventDefault();
-            logout();
-          }}
-        >
-          <IconLogout className={classes.linkIcon} stroke={1.5} />
-          <span>Logout</span>
-        </a>
-      </Navbar.Section>
-    </Navbar>
+        <Navbar.Section className={classes.footer}>
+          <Link
+            href="/app/dash/profile"
+            className={cx(classes.link, {
+              [classes.linkActive]: "profile" === active.replace(regex, ""),
+            })}
+          >
+            <IconUser className={classes.linkIcon} stroke={1.5} />
+            Profile
+          </Link>
+          <a
+            href="#"
+            className={classes.link}
+            onClick={(event) => {
+              event.preventDefault();
+              logout();
+            }}
+          >
+            <IconLogout className={classes.linkIcon} stroke={1.5} />
+            <span>Logout</span>
+          </a>
+        </Navbar.Section>
+      </Navbar>
+    </>
   );
 }
