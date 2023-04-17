@@ -1,0 +1,3 @@
+[submodule "sweng-project/SWENG_GROUP3_2023"]
+	path = sweng-project/SWENG_GROUP3_2023
+	url = git@github.com:ryanido/Realtime_NN_Classification_Using_OpenVino.git
